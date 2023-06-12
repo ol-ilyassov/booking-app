@@ -2,16 +2,35 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/ol-ilyassov/booking-app/pkg/config"
 	"github.com/ol-ilyassov/booking-app/pkg/handlers"
+	"github.com/ol-ilyassov/booking-app/pkg/render"
 )
 
 const portNumber string = ":8081"
 
 func main() {
-	http.HandleFunc("/", handlers.Home)
-	http.HandleFunc("/about", handlers.AboutUs)
+	var app config.AppConfig
+
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal("cannot create template cache")
+	}
+
+	app.TemplateCache = tc
+
+	app.UseCache = false
+
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
+
+	render.NewTemplates(&app)
+
+	http.HandleFunc("/", handlers.Repo.Home)
+	http.HandleFunc("/about", handlers.Repo.AboutUs)
 
 	fmt.Println("Starting application on port", portNumber)
 	_ = http.ListenAndServe(portNumber, nil)
