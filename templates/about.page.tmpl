@@ -7,7 +7,15 @@
                 <h1>About us!</h1>
                 <p>Some specifications and defitions.</p>
 
-                <p>Template data: {{index .StringMap "test"}}</p>
+                <p>Template text: {{index .StringMap "test"}}</p>
+
+                <p>
+                    {{if ne (index .StringMap "remote_ip") ""}}
+                        Your remote IP address is {{index .StringMap "remote_ip"}}
+                    {{else}}
+                        No remote IP address stored. Visit: 
+                        <a href="/">Home page</a>.
+                    {{end}}
             </div>
         </div>
     </div>

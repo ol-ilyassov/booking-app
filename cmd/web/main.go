@@ -4,16 +4,29 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/ol-ilyassov/booking-app/pkg/config"
 	"github.com/ol-ilyassov/booking-app/pkg/handlers"
 	"github.com/ol-ilyassov/booking-app/pkg/render"
 )
 
+// Not good/bad approach to use global variables.
 const portNumber string = ":8081"
 
+var app config.AppConfig
+
 func main() {
-	var app config.AppConfig
+	// Application working mode (development|production).
+	app.InProduction = false
+
+	// Session management.
+	app.Session = scs.New()
+	app.Session.Lifetime = 24 * time.Hour
+	app.Session.Cookie.Persist = true // on browser tab close, saves cookie.
+	app.Session.Cookie.SameSite = http.SameSiteLaxMode
+	app.Session.Cookie.Secure = false // app.InProduction
 
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
