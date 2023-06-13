@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ol-ilyassov/booking-app/pkg/config"
+	"github.com/ol-ilyassov/booking-app/pkg/models"
 	"github.com/ol-ilyassov/booking-app/pkg/render"
 )
 
@@ -29,9 +29,15 @@ func NewHandlers(r *Repository) {
 }
 
 func (h *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.tmpl")
+	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
 func (h *Repository) AboutUs(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "About page!")
+
+	stringMap := make(map[string]string)
+	stringMap["test"] = "Hello again!"
+
+	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+	})
 }

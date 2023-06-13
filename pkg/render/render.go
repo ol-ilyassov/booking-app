@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/ol-ilyassov/booking-app/pkg/config"
+	"github.com/ol-ilyassov/booking-app/pkg/models"
 )
 
 var functions template.FuncMap
@@ -19,8 +20,12 @@ func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
 // RenderTemplate renders templates using html/template package.
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	// templates could be read from cache or from origin.
 	var tc map[string]*template.Template
 	var err error
@@ -31,7 +36,7 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	} else {
 		tc, err = CreateTemplateCache()
 		if err != nil {
-			fmt.Println("error, creating templates:", err)
+			fmt.Println("error, could not create templates:", err)
 		}
 	}
 
@@ -42,7 +47,10 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	_ = t.Execute(buf, nil)
+	// add default common data among web pages.
+	td = AddDefaultData(td)
+
+	_ = t.Execute(buf, td)
 
 	_, err = buf.WriteTo(w)
 	if err != nil {
