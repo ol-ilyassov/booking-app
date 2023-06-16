@@ -43,7 +43,6 @@ func main() {
 	render.NewTemplates(&app)
 
 	fmt.Println("Starting application on port", portNumber)
-	// _ = http.ListenAndServe(portNumber, nil)
 
 	serve := &http.Server{
 		Addr:    portNumber,
