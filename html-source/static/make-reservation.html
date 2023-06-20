@@ -70,27 +70,36 @@
     <div class="container">
 
       <div class="row">
-        <div class="col">
-          <img src="../static/images/majors-suite.png" class="img-fluid img-thumbnail mx-auto d-block room-image" alt="room image">
-        </div>       
-      </div>
+        <div class="row">
+          <div class="col">
+            <h1>Make Reservation</h1>
+            <form method="post" action="" class="needs-validation" novalidate>
+              <div class="form-group mt-5">
+                <label for="first_name">First name:</label>
+                <input type="text" class="form-control" name="first_name" id="first_name" autocomplete="off" required>
+              </div>
 
-      <div class="row">
-        <div class="col">
-          <h1 class="text-center mt-4">Major's Suite</h1>
-          <p>
-            Your home away from home, set on the majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-            Your home away from home, set on the majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-            Your home away from home, set on the majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-            Your home away from home, set on the majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-            Your home away from home, set on the majestic waters of the Atlantic Ocean, this will be a vacation to remember.
-          </p>
-        </div>
-      </div>
+              <div class="form-group mt-1">
+                <label for="last_name">Last name:</label>
+                <input type="text" class="form-control" name="last_name" id="last_name" autocomplete="off" required>
+              </div>
 
-      <div class="row">
-        <div class="col text-center">
-          <a href="/make-reservation-ms" class="btn btn-success">Check Availability</a>
+              <div class="form-group mt-1">
+                <label for="last_name">Email:</label>
+                <input type="email" class="form-control" name="email" id="email" autocomplete="off" required>
+              </div>
+
+              <div class="form-group mt-1">
+                <label for="phone">Phone number:</label>
+                <input type="text" class="form-control" name="phone" id="phone" autocomplete="off" required>
+              </div>
+
+              <hr>
+
+              <input type="submit" class="btn btn-primary" value="Make Reservation">
+
+            </form>
+          </div>
         </div>
       </div>
 
