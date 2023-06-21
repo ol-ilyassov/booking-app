@@ -109,10 +109,10 @@
     </div>
 
     <div class="row">
-        <div class="col">
-          <button class="btn btn-outline-secondary" id="myBtn">Click me</button>
-        </div>
+      <div class="col">
+        <button class="btn btn-outline-secondary" id="myBtn">Click me</button>
       </div>
+    </div>
 
   </div>
 
@@ -131,15 +131,16 @@
     </div>
   </div>
 
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>
-
   <!-- Datepicker JS -->
   <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/js/datepicker-full.min.js"></script>
-
   <!-- Custom alerts JS -->
   <script src="https://unpkg.com/notie"></script>
+  <!-- Custom modal SweetAlert JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     (function () {
@@ -165,21 +166,28 @@
     const rangepicker = new DateRangePicker(elem, {
       format: "yyyy-mm-dd",
       autohide: true,
-      // clearButton: true,
-      // todayHighlight: true,
     });
 
     // Custom alerts:
     function notify(msg, msgType) {
       notie.alert({
-        type: msgType, 
+        type: msgType,
         text: msg,
       })
     };
 
-    document.getElementById("myBtn").addEventListener("click", function() {
-      notify("My Message","success")
-      // notify("Error", "error")
+    function notifyModal(title, text, icon, confirmBtn) {
+      Swal.fire({
+        title: title,
+        html: text,
+        // text: text,
+        icon: icon,
+        confirmButtonText: confirmBtn
+      })
+    }
+
+    document.getElementById("myBtn").addEventListener("click", function () {
+
     })
   </script>
 </body>
