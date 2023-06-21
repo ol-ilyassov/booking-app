@@ -14,20 +14,7 @@
   <!-- Custom alerts -->
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
 
-  <style>
-    .my-footer {
-      height: 5em;
-      background-color: #163b65;
-      margin-top: 2em;
-      padding: 1em;
-      color: #FFFFFF;
-      font-size: 80%;
-    }
-
-    .notie-container {
-      box-shadow: none;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
 </head>
 
 <body>
@@ -143,6 +130,8 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
+    let attention = Prompt();
+
     (function () {
       'use strict';
       window.addEventListener('load', function () {
@@ -186,8 +175,128 @@
       })
     }
 
-    document.getElementById("myBtn").addEventListener("click", function () {
+    // Custom toasts:
+    // JS module technique:
+    function Prompt() {
 
+      let toast = function (c) {
+        const { // default values
+          msg = "",
+          icon = "success",
+          position = "top-end",
+        } = c;
+
+        const Toast = Swal.mixin({
+          toast: true,
+          title: msg,
+          icon: icon,
+          position: position,
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressbar: true,
+          didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+        });
+
+        Toast.fire({});
+      }
+
+      let success = function (c) {
+        const {
+          msg = "",
+          title = "",
+          footer = "",
+        } = c;
+
+        Swal.fire({
+          icon: 'success',
+          title: title,
+          text: msg,
+          footer: footer,
+        })
+      }
+
+      let error = function (c) {
+        const {
+          msg = "",
+          title = "",
+          footer = "",
+        } = c;
+
+        Swal.fire({
+          icon: 'error',
+          title: title,
+          text: msg,
+          footer: footer,
+        })
+      }
+
+      async function custom(c) {
+        const {
+          msg = "",
+          title = "",
+        } = c;
+
+        const { value: formValues } = await Swal.fire({
+          title: title,
+          html: msg,
+          backdrop: false,
+          focusConfirm: false,
+          showCancelButton: true,
+          willOpen: () => {
+            const elem = document.getElementById('reservation-dates-modal');
+            const rp = new DateRangePicker(elem, {
+              format: 'yyyy-mm-dd',
+              showOnFocus: true,
+              orientation: 'top',
+            });
+          },
+          preConfirm: () => {
+            return [
+              document.getElementById('start').value,
+              document.getElementById('end').value
+            ]
+          },
+          didOpen: () => {
+            document.getElementById('start_date').disabled = false;
+            document.getElementById('end_date').disabled = false;
+          },
+        });
+
+        if (formValues) {
+          Swal.fire(JSON.stringify(formValues))
+        }
+      }
+
+      return {
+        toast: toast,
+        success: success,
+        error: error,
+        custom, custom,
+      }
+    }
+
+
+    document.getElementById("myBtn").addEventListener("click", function () {
+      let html = `
+      <form class="container-fluid mt-1 mb-1" id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+        <div class="row">
+          <div class="col">
+            <div class="row" id="reservation-dates-modal">
+              <div class="col">
+                <input name="start_date" id="start_date" disabled class="form-control" type="text"  placeholder="Arrival" required>
+              </div>
+              <div class="col">
+                <input name="end_date" id="end_date" disabled class="form-control" type="text"  placeholder="Departure" required>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      `
+      attention.custom({ msg: html, title: "Choose your dates" });
     })
   </script>
 </body>
