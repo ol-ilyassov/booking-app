@@ -20,6 +20,25 @@ const portNumber string = ":8081"
 var app config.AppConfig
 
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Starting application on port", portNumber)
+
+	serve := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	err = serve.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	// Data that could be stored in session.
 	gob.Register(models.Reservation{})
 
@@ -36,6 +55,7 @@ func main() {
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
+		return err
 	}
 
 	app.TemplateCache = tc
@@ -47,15 +67,5 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	fmt.Println("Starting application on port", portNumber)
-
-	serve := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-
-	err = serve.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }

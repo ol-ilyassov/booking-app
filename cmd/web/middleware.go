@@ -1,19 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/justinas/nosurf"
 )
 
-// Example of simple custom middleware.
+// Example of simple custom middleware:
+/*
 func WriteToConsole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Hit the page")
 		next.ServeHTTP(w, r)
 	})
 }
+*/
 
 // NoSurf adds CSRF protection to all POST requests (add CSRF security token).
 func NoSurf(next http.Handler) http.Handler {
