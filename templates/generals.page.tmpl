@@ -25,7 +25,7 @@
 
       <div class="row">
         <div class="col text-center">
-          <a id="check-availability-btn" href="#!" class="btn btn-success">Check Availability</a>
+          <a id="check-availability-btn" href="#" class="btn btn-success">Check Availability</a>
         </div>
       </div>
 
@@ -36,22 +36,59 @@
 <script>
   document.getElementById("check-availability-btn").addEventListener("click", function () {
     let html = `
-      <form class="container-fluid mt-1 mb-1" id="check-availability-form" action="" method="post" novalidate class="needs-validation">
+      <form class="container-fluid mt-1 mb-1" id="check-availability-form" action="#!" method="post" novalidate class="needs-validation">
         <div class="row">
           <div class="col">
             <div class="row" id="reservation-dates-modal">
               <div class="col">
-                <input name="start_date" id="start_date" disabled class="form-control" type="text"  placeholder="Arrival" required>
+                <input disabled class="form-control" type="text" name="start_date" id="start_date" placeholder="Arrival" required>
               </div>
               <div class="col">
-                <input name="end_date" id="end_date" disabled class="form-control" type="text"  placeholder="Departure" required>
+                <input disabled class="form-control" type="text" name="end_date" id="end_date" placeholder="Departure" required>
               </div>
             </div>
           </div>
         </div>
       </form>
     `
-    attention.custom({ msg: html, title: "Choose your dates" });
+    attention.custom({ 
+      msg: html, 
+      title: "Choose your dates",
+      willOpen: () => {
+        const elem = document.getElementById('reservation-dates-modal');
+        const rp = new DateRangePicker(elem, {
+          format: 'yyyy-mm-dd',
+          showOnFocus: true,
+          orientation: 'top',
+        });
+      },
+      preConfirm: () => {
+        return [
+          document.getElementById('start_date').value,
+          document.getElementById('end_date').value
+        ]
+      },
+      didOpen: () => {
+        document.getElementById('start_date').disabled = false;
+        document.getElementById('end_date').disabled = false;
+      },
+      callback: function(result) {
+        console.log("called", result);
+
+        let form = document.getElementById("check-availability-form");
+        let formData = new FormData(form);
+        formData.append("csrf_token", "{{.CSRFToken}}");
+
+        fetch('/search-availability-json', {
+          method: "post",
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+      }
+    });
   })
 </script>
 {{end}}
