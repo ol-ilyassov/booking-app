@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/ol-ilyassov/booking-app/pkg/config"
-	"github.com/ol-ilyassov/booking-app/pkg/handlers"
-	"github.com/ol-ilyassov/booking-app/pkg/render"
+	"github.com/ol-ilyassov/booking-app/internal/config"
+	"github.com/ol-ilyassov/booking-app/internal/handlers"
+	"github.com/ol-ilyassov/booking-app/internal/render"
 )
 
 // Not good/bad approach to use global variables.
