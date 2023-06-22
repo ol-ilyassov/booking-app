@@ -128,7 +128,6 @@ func (h *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	form := forms.New(r.PostForm)
 	form.Required("first_name", "last_name", "email")
 	form.MinLength("first_name", 3, r)
-	form.MinLength("last_name", 3, r)
 	form.IsEmail("email")
 
 	if !form.Valid() {
@@ -141,4 +140,24 @@ func (h *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	h.App.Session.Put(r.Context(), "reservation", reservation)
+	http.Redirect(w, r, "reservation-summary", http.StatusSeeOther)
+}
+
+func (h *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	reservation, ok := h.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		log.Println("cannot get item from session")
+		h.App.Session.Put(r.Context(), "error", "Can't get reservation data from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+	h.App.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }

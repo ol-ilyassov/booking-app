@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/ol-ilyassov/booking-app/internal/config"
 	"github.com/ol-ilyassov/booking-app/internal/handlers"
+	"github.com/ol-ilyassov/booking-app/internal/models"
 	"github.com/ol-ilyassov/booking-app/internal/render"
 )
 
@@ -18,6 +20,9 @@ const portNumber string = ":8081"
 var app config.AppConfig
 
 func main() {
+	// Data that could be stored in session.
+	gob.Register(models.Reservation{})
+
 	// Application working mode (development|production).
 	app.InProduction = false
 

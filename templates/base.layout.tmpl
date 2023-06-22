@@ -127,6 +127,18 @@
       })
     }
 
+    {{with .Flash}}
+    notify("{{.}}", "success")
+    {{end}}
+
+    {{with .Error}}
+    notify("{{.}}", "error")
+    {{end}}
+
+    {{with .Warning}}
+    notify("{{.}}", "warning")
+    {{end}}
+
     // Custom toasts:
     // JS module technique:
     function Prompt() {
