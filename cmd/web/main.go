@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/ol-ilyassov/booking-app/internal/config"
 	"github.com/ol-ilyassov/booking-app/internal/handlers"
+	"github.com/ol-ilyassov/booking-app/internal/helpers"
 	"github.com/ol-ilyassov/booking-app/internal/models"
 	"github.com/ol-ilyassov/booking-app/internal/render"
 )
@@ -18,6 +20,9 @@ import (
 const portNumber string = ":8081"
 
 var app config.AppConfig
+var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	err := run()
@@ -45,27 +50,33 @@ func run() error {
 	// Application working mode (development|production).
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	// Session management.
-	app.Session = scs.New()
-	app.Session.Lifetime = 24 * time.Hour
-	app.Session.Cookie.Persist = true // on browser tab close, saves cookie.
-	app.Session.Cookie.SameSite = http.SameSiteLaxMode
-	app.Session.Cookie.Secure = false // app.InProduction
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true // on browser tab close, saves cookie.
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = false // app.InProduction
+	app.Session = session
 
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 		return err
 	}
-
 	app.TemplateCache = tc
 
 	app.UseCache = false
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
-
 	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 
 	return nil
 }
