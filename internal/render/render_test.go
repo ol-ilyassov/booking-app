@@ -57,6 +57,8 @@ func TestRenderTemplate(t *testing.T) {
 		t.Error("error, writing template to browser:", err)
 	}
 
+	app.UseCache = true
+
 	err = RenderTemplate(&w, r, "non-existent.page.tmpl", &models.TemplateData{})
 	if err == nil {
 		t.Error("error, rendered template that does not exists")
