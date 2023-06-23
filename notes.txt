@@ -10,3 +10,5 @@ go test -v
 > Go coverage test command: 
 go test -coverprofile=coverage.out && go tool cover -html=coverage.out
 
+> Go test to run all tests in subdirectories:
+go test -v ./...
