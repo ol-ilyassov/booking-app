@@ -10,6 +10,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/ol-ilyassov/booking-app/internal/config"
+	"github.com/ol-ilyassov/booking-app/internal/driver"
 	"github.com/ol-ilyassov/booking-app/internal/handlers"
 	"github.com/ol-ilyassov/booking-app/internal/helpers"
 	"github.com/ol-ilyassov/booking-app/internal/models"
@@ -25,10 +26,11 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
 	fmt.Println("Starting application on port", portNumber)
 
@@ -43,9 +45,12 @@ func main() {
 	}
 }
 
-func run() error {
+func run() (*driver.DB, error) {
 	// Data that could be stored in session.
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 
 	// Application working mode (development|production).
 	app.InProduction = false
@@ -64,19 +69,26 @@ func run() error {
 	session.Cookie.Secure = false // app.InProduction
 	app.Session = session
 
+	// DB connection.
+	app.InfoLog.Println("Connection to database ...")
+	db, err := driver.ConnectSQL("")
+	if err != nil {
+		log.Fatal("Cannot cinnect to database! Dying...")
+	}
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
-		return err
+		return nil, err
 	}
 	app.TemplateCache = tc
 
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 
-	return nil
+	return db, err
 }

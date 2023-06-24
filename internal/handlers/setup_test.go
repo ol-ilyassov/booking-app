@@ -53,10 +53,10 @@ func getRoutes() http.Handler {
 	app.TemplateCache = tc
 	app.UseCache = true // for testing case, it is changed to local function in order to avoid error with path to templates.
 
-	repo := NewRepo(&app)
+	repo := NewRepo(&app, db)
 	NewHandlers(repo)
 
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
 	mux := chi.NewRouter()
 
