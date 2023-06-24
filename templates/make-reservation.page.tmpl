@@ -7,11 +7,19 @@
       <div class="row">
         <div class="row">
           <div class="col">
-            <h1>Make Reservation</h1>
-            <p>Reservation Details</p>
             {{$res := index .Data "reservation"}}
+            <h1>Make Reservation</h1>
+            <p><strong>Reservation Details</strong><br><br>
+            Room: {{$res.Room.RoomName}}<br>
+            Arrival: {{index .StringMap "start_date"}}<br>
+            Departure: {{index .StringMap "end_date"}}
+            </p>
             <form method="post" action="/make-reservation" class="" novalidate>
               <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+              <input type="hidden" name="start_date" id="start_date" value="{{index .StringMap "start_date"}}">
+              <input type="hidden" name="end_date" id="end_date" value="{{index .StringMap "end_date"}}">
+              <input type="hidden" name="room_id" value="{{$res.RoomID}}">
 
               <div class="form-group mt-3">
                 <label for="first_name">First name:</label>
@@ -28,20 +36,6 @@
                 {{end}}
                 <input class="form-control {{with .Form.Errors.Get "last_name"}} is-invalid {{end}}" type="text" name="last_name" id="last_name" autocomplete="off" value="{{$res.LastName}}" required>
               </div>
-
-
-              <div class="form-group mt-1">
-                <label for="start_date">Start Date:</label>
-                <input class="form-control" type="text" name="start_date" id="start_date" autocomplete="off">
-              </div>
-
-              <div class="form-group mt-1">
-                <label for="end_date">End Date:</label>
-                <input class="form-control" type="text" name="end_date" id="end_date" autocomplete="off">
-              </div>
-
-              <input type="hidden" name="room_id" value="1">
-
 
               <div class="form-group mt-1">
                 <label for="email">Email:</label>
