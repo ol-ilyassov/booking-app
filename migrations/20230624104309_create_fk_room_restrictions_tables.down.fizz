@@ -1,0 +1,3 @@
+drop_foreign_key("room_restrictions", "fk_room_restrictions_rooms", {"if_exists": true})
+
+drop_foreign_key("room_restrictions", "fk_room_restrictions_restrictions", {"if_exists": true})

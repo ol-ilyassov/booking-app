@@ -1,0 +1,4 @@
+drop_foreign_key("room_restrictions", "fk_room_restrictions_reservations", {"if_exists": true})
+
+drop_index("reservations", "idx_reservations_email")
+drop_index("reservations", "idx_reservations_last_name")

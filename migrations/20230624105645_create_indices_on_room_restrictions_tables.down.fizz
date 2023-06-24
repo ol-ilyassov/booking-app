@@ -1,0 +1,5 @@
+drop_index("room_restrictions", "idx_room_restrictions_start_date_end_date")
+
+drop_index("room_restrictions", "idx_room_restrictions_room_id")
+
+drop_index("room_restrictions", "idx_room_restrictions_reservation_id")
