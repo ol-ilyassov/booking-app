@@ -1,11 +1,63 @@
 {{template "admin" .}}
 
 {{define "page-title"}}
-  Calendar Reservations
+  Reservations Calendar
 {{end}}
 
 {{define "content"}}
+  {{$now := index .Data "now"}}
+  {{$rooms := index .Data "rooms"}}
+  {{$dim := index .IntMap "days_in_month"}}
+
   <div class="col-md-12">
-    Calendar Reservations content
+    <div class="text-center">
+      <h3>{{formatDate $now "January"}} {{formatDate $now "2006"}}</h3>
+      <a class="btn btn-sm btn-outline-secondary px-3 py-2" href='/admin/reservations-calendar'>
+        now
+      </a>
+
+      <div class="row">
+        <div class="col-1">
+          <a class="btn btn-sm btn-outline-secondary px-3 py-2" href='/admin/reservations-calendar?y={{index .StringMap "last_month_year"}}&m={{index .StringMap "last_month"}}'>
+            &lt;&lt;
+          </a>
+        </div>
+
+        <div class="col-10"></div>
+        <div class="col-1">
+          <a class="btn btn-sm btn-outline-secondary px-3 py-2" href='/admin/reservations-calendar?y={{index .StringMap "next_month_year"}}&m={{index .StringMap "next_month"}}'>
+            &gt;&gt;
+          </a>
+        </div>
+      </div>
+
+      {{range $rooms}}
+        {{$roomID := .ID}}
+
+        <h4 class="mt-4">{{.RoomName}}</h4>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <tr class="table-dark">
+              {{range $index := iterate $dim}}
+                <td class="text-center py-1 px-2">
+                  {{$index}}
+                </td>
+              {{end}}
+            </tr>
+
+            <tr>
+              {{range $index := iterate $dim}}
+                <td class="text-center p-1">
+                  <input type="checkbox">
+                </td>
+              {{end}}
+            </tr>
+          </table>
+        </div>
+
+      {{end}}
+      
+    </div>
   </div>
 {{end}}
