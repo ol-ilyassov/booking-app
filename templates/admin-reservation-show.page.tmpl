@@ -14,7 +14,7 @@
     <strong>Room:</strong> {{$res.Room.RoomName}}
     </p>
 
-    <form method="post" action="/admin/reservations/{{$res}}/{{$res.ID}}" class="" novalidate>
+    <form method="post" action="/admin/reservations/{{$src}}/{{$res.ID}}" class="" novalidate>
       <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
       <div class="form-group mt-3">
