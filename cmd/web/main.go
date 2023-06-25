@@ -31,6 +31,9 @@ func main() {
 	}
 	defer db.SQL.Close()
 
+	defer close(app.MailChan)
+	listenForMail()
+
 	app.InfoLog.Printf("Starting application on port%v\n", portNumber)
 
 	serve := &http.Server{
@@ -50,6 +53,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	// Application working mode (development|production).
 	app.InProduction = false

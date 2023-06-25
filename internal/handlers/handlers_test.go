@@ -13,11 +13,6 @@ import (
 	"github.com/ol-ilyassov/booking-app/internal/models"
 )
 
-type postData struct {
-	key   string
-	value string
-}
-
 var theTests = []struct {
 	name               string
 	url                string
