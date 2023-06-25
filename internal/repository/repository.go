@@ -30,4 +30,5 @@ type DatabaseRepo interface {
 	UpdateProcessedForReservation(id, processed int) error
 
 	AllRooms() ([]models.Room, error)
+	GetRestrictionsForRoomsByDate(roomID int, start, end time.Time) ([]models.RoomRestriction, error)
 }
