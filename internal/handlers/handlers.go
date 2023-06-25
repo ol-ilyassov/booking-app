@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -505,7 +506,36 @@ func (h *Repository) ShowAdminNewReservations(w http.ResponseWriter, r *http.Req
 	})
 }
 
-// ShowAdminCalendarReservations .
+// ShowAdminReservation shows the reservation in the admin dashboard.
+func (h *Repository) ShowAdminReservation(w http.ResponseWriter, r *http.Request) {
+	exploded := strings.Split(r.RequestURI, "/")
+	id, err := strconv.Atoi(exploded[4])
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	src := exploded[3]
+	stringMap := make(map[string]string)
+	stringMap["src"] = src
+
+	reservation, err := h.DB.GetReservationByID(id)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	render.Template(w, r, "admin-reservation-show.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
+		Data:      data,
+		Form:      forms.New(nil),
+	})
+}
+
+// ShowAdminCalendarReservations displays the reservation calendar.
 func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-calendar-reservations.page.tmpl", &models.TemplateData{})
 }
