@@ -8,60 +8,61 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/justinas/nosurf"
 	"github.com/ol-ilyassov/booking-app/internal/config"
+	"github.com/ol-ilyassov/booking-app/internal/helpers"
 	"github.com/ol-ilyassov/booking-app/internal/models"
 	"github.com/ol-ilyassov/booking-app/internal/render"
 )
 
-// var session *scs.SessionManager
 var app config.AppConfig
+var session *scs.SessionManager
 var pathToTemplates = "./../../templates"
 var functions template.FuncMap
-var infoLog *log.Logger
-var errorLog *log.Logger
 
-func getRoutes() http.Handler {
+func TestMain(m *testing.M) {
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 
 	app.InProduction = false
 
-	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	app.InfoLog = infoLog
+	app.InfoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.ErrorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-	app.ErrorLog = errorLog
-
-	session := scs.New()
+	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = false
-
 	app.Session = session
 
-	tc, err := CreateTestTemplateCache() // for testing case, it is changed to local function in order to avoid error with path to templates.
+	tc, err := CreateTestTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
-
 	app.TemplateCache = tc
-	app.UseCache = true // for testing case, it is changed to local function in order to avoid error with path to templates.
+	app.UseCache = true
 
-	repo := NewRepo(&app, db)
+	repo := NewTestingRepo(&app)
 	NewHandlers(repo)
-
 	render.NewRenderer(&app)
+	helpers.NewHelpers(&app)
 
+	os.Exit(m.Run())
+}
+
+func getRoutes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	// mux.Use(NoSurf) // for testing case, it is turned off.
+	// mux.Use(NoSurf)
 	mux.Use(SessionLoad)
 
 	mux.Get("/", Repo.Home)
@@ -84,38 +85,27 @@ func getRoutes() http.Handler {
 	return mux
 }
 
-func NoSurf(next http.Handler) http.Handler {
-	csrfHandler := nosurf.New(next)
-	csrfHandler.SetBaseCookie(http.Cookie{
-		HttpOnly: true,
-		Path:     "/",
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
-	})
-	return csrfHandler
-}
-
 func SessionLoad(next http.Handler) http.Handler {
-	return app.Session.LoadAndSave(next)
+	return session.LoadAndSave(next)
 }
 
 func CreateTestTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 
-	// fmt.Sprintf solves the problem when running program from root directory or specific folder (as handlers).
 	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
+	if err != nil {
+		return cache, err
+	}
+
+	matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
 	if err != nil {
 		return cache, err
 	}
 
 	for _, page := range pages {
 		name := filepath.Base(page)
-		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
-		if err != nil {
-			return cache, err
-		}
 
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 		if err != nil {
 			return cache, err
 		}
