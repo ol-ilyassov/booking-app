@@ -469,7 +469,32 @@ func (h *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
-// AdminDashboard .
+// ShowAdminDashboard .
 func (h *Repository) ShowAdminDashboard(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
+}
+
+// ShowAdminAllReservations .
+func (h *Repository) ShowAdminAllReservations(w http.ResponseWriter, r *http.Request) {
+	reservations, err := h.DB.AllReservations()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["reservations"] = reservations
+
+	render.Template(w, r, "admin-all-reservations.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
+}
+
+// ShowAdminNewReservations .
+func (h *Repository) ShowAdminNewReservations(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-new-reservations.page.tmpl", &models.TemplateData{})
+}
+
+// ShowAdminCalendarReservations .
+func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-calendar-reservations.page.tmpl", &models.TemplateData{})
 }
