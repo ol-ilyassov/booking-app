@@ -16,6 +16,10 @@ import (
 	"github.com/ol-ilyassov/booking-app/internal/render"
 )
 
+// Further Grow:
+// Alex Edwards' session Manager and Redis storage
+// to store sessions and do not lose them after re-launch app.
+
 // Not good/bad approach to use global variables.
 const portNumber string = ":8081"
 

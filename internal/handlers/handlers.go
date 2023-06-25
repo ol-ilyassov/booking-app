@@ -460,3 +460,16 @@ func (h *Repository) PostShowLogin(w http.ResponseWriter, r *http.Request) {
 	h.App.Session.Put(r.Context(), "flash", "Logged in successfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+// Logout logs a user out.
+func (h *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+	_ = h.App.Session.Destroy(r.Context())
+	_ = h.App.Session.RenewToken(r.Context())
+
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+
+// AdminDashboard .
+func (h *Repository) ShowAdminDashboard(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "admin-dashboard.page.tmpl", &models.TemplateData{})
+}
