@@ -670,8 +670,8 @@ func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *htt
 		blockMap := make(map[string]int)
 
 		for d := firstOfMonth; d.After(lastOfMonth) == false; d = d.AddDate(0, 0, 1) {
-			reservationMap[d.Format("2006-01-02")] = 0
-			blockMap[d.Format("2006-01-02")] = 0
+			reservationMap[d.Format("2006-01-2")] = 0
+			blockMap[d.Format("2006-01-2")] = 0
 		}
 
 		// get all the restrictions for the current room
@@ -684,10 +684,10 @@ func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *htt
 		for _, y := range restrictions {
 			if y.ReservationID > 0 {
 				for d := y.StartDate; d.After(y.EndDate) == false; d = d.AddDate(0, 0, 1) {
-					reservationMap[d.Format("2006-01-02")] = y.ReservationID
+					reservationMap[d.Format("2006-01-2")] = y.ReservationID
 				}
 			} else {
-				blockMap[y.StartDate.Format("2006-01-02")] = y.ID
+				blockMap[y.StartDate.Format("2006-01-2")] = y.ID
 			}
 		}
 		data[fmt.Sprintf("reservation_map_%d", x.ID)] = reservationMap
@@ -701,4 +701,9 @@ func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *htt
 		Data:      data,
 		IntMap:    intMap,
 	})
+}
+
+// PostAdminCalendarReservations handles post of reservation calendar.
+func (h *Repository) PostAdminCalendarReservations(w http.ResponseWriter, r *http.Request) {
+
 }
