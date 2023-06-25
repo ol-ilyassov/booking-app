@@ -20,7 +20,6 @@
           <th>Room</th>
           <th>Arrival</th>
           <th>Departure</th>
-          <th>Processed</th>
         </tr>
       </thead>
       <tbody>
@@ -35,7 +34,6 @@
           <td>{{.Room.RoomName}}</td>
           <td>{{humanDate .StartDate}}</td>
           <td>{{humanDate .EndDate}}</td>
-          <td>{{.Processed}}</td>
         </tr>
         {{end}}
       </tbody>

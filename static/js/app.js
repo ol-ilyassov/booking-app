@@ -78,11 +78,11 @@ function Prompt() {
           c.willOpen();
         }
       },
-      preConfirm: () => {
-        if (c.preConfirm !== undefined) {
-          return c.preConfirm();
-        }
-      },
+      // preConfirm: () => {
+      //   if (c.preConfirm !== undefined) {
+      //     return c.preConfirm();
+      //   }
+      // },
       didOpen: () => {
         if (c.didOpen !== undefined) {
           c.didOpen();
