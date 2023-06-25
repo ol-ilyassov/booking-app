@@ -417,3 +417,9 @@ func (h *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 		StringMap: stringMap,
 	})
 }
+
+func (h *Repository) ShowLogin(w http.ResponseWriter, r *http.Request) {
+	render.Template(w, r, "login.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
+}
