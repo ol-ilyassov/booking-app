@@ -31,4 +31,7 @@ type DatabaseRepo interface {
 
 	AllRooms() ([]models.Room, error)
 	GetRestrictionsForRoomsByDate(roomID int, start, end time.Time) ([]models.RoomRestriction, error)
+
+	InsertNewBlock(id int, startDate time.Time) error
+	DeleteBlockByID(id int) error
 }

@@ -705,5 +705,80 @@ func (h *Repository) ShowAdminCalendarReservations(w http.ResponseWriter, r *htt
 
 // PostAdminCalendarReservations handles post of reservation calendar.
 func (h *Repository) PostAdminCalendarReservations(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
 
+	year, err := strconv.Atoi(r.Form.Get("y"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	month, err := strconv.Atoi(r.Form.Get("m"))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// process blocks
+	rooms, err := h.DB.AllRooms()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	form := forms.New(r.PostForm)
+
+	for _, x := range rooms {
+		// Get the block map from the session.
+		// Loop throught entire map, if we have an entry in the map that does not exist in our posted data, and if the restriction_id > 0, then it is a block we need to remove.
+		curMap := h.App.Session.Get(r.Context(), fmt.Sprintf("block_map_%d", x.ID)).(map[string]int)
+		for name, value := range curMap {
+			// ok will be false if the value is not in the map.
+			if val, ok := curMap[name]; ok {
+				//only pay attention to values > 0, and that are not in the form post
+				// the rest are just placeholders for days without blocks
+				if val > 0 {
+					if !form.Has(fmt.Sprintf("remove_block_%d_%s", x.ID, name)) {
+						// delete the restriction id
+						// log.Println(value)
+						err = h.DB.DeleteBlockByID(value)
+						if err != nil {
+							helpers.ServerError(w, err)
+							return
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// now handle new blocks
+	for name, _ := range r.PostForm {
+		if strings.HasPrefix(name, "add_block") {
+			exploded := strings.Split(name, "_")
+			roomID, err := strconv.Atoi(exploded[2])
+			if err != nil {
+				helpers.ServerError(w, err)
+				return
+			}
+			t, err := time.Parse("2006-01-2", exploded[3])
+			if err != nil {
+				helpers.ServerError(w, err)
+				return
+			}
+			// insert new block
+			// log.Println(roomID, exploded[3])
+			err = h.DB.InsertNewBlock(roomID, t)
+			if err != nil {
+				helpers.ServerError(w, err)
+				return
+			}
+		}
+	}
+
+	h.App.Session.Put(r.Context(), "flash", "Changes saved!")
+	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%d&m=%d", year, month), http.StatusSeeOther)
 }
