@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -59,17 +61,34 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Restriction{})
 	gob.Register(map[string]int{})
 
-	mailChan := make(chan models.MailData)
-	app.MailChan = mailChan
-
-	// Application working mode (development|production).
-	app.InProduction = false
-
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
 
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.ErrorLog = errorLog
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
+
+	// Application working mode (development|production).
+	inProduction := flag.Bool("production", false, "Application production mode (true=production | false=development)")
+	useCache := flag.Bool("cache", true, "Use caching on templates")
+	dbHost := flag.String("dbhost", "localhost", "Database host")
+	dbPort := flag.String("dbport", "5432", "Database port")
+	dbName := flag.String("dbname", "", "Database name")
+	dbUsername := flag.String("dbuser", "", "Database user")
+	dbPassword := flag.String("dbpass", "", "Database password")
+	dbSSL := flag.String("dbssl", "disable", "Database ssl settings (disable|prefer|require)")
+	flag.Parse()
+
+	if *dbName == "" || *dbUsername == "" {
+		app.InfoLog.Println("missing required flags...")
+		os.Exit(1)
+	}
+
+	app.InProduction = *inProduction
+
+	app.UseCache = *useCache
 
 	// Session management.
 	session = scs.New()
@@ -81,7 +100,9 @@ func run() (*driver.DB, error) {
 
 	// DB connection.
 	app.InfoLog.Println("Connection to database ...")
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=booking user=booker password=qwerty1!")
+
+	dsn := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s", *dbHost, *dbPort, *dbName, *dbUsername, *dbPassword, *dbSSL)
+	db, err := driver.ConnectSQL(dsn)
 	if err != nil {
 		log.Fatal("Cannot cinnect to database! Dying...")
 	}
@@ -93,8 +114,6 @@ func run() (*driver.DB, error) {
 		return nil, err
 	}
 	app.TemplateCache = tc
-
-	app.UseCache = false
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
