@@ -17,3 +17,15 @@
 .datepicker {
     z-index: 10000;
 }
+
+.highlighted-text {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.sp-highlighted-text {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem;
+    border-radius: 5px;
+}
