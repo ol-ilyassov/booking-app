@@ -14,17 +14,19 @@
     "ti-icons": "^0.1.2"
   },
   "devDependencies": {
-    "browser-sync": "^2.16.0",
     "compass-mixins": "^0.12.10",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.1",
     "gulp-concat": "^2.6.1",
     "gulp-inject": "^5.0.2",
     "gulp-inject-partials": "^1.0.3",
     "gulp-replace": "^1.0.0",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^5.1.0",
     "merge-stream": "^1.0.1",
     "minimatch": "^3.0.4",
-    "node-sass": "^4.12.0"
+    "sass": "^1.77.0"
+  },
+  "overrides": {
+    "node-sass": "npm:sass@1.77.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
