@@ -13,7 +13,7 @@ require (
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/xhit/go-simple-mail/v2 v2.16.0
-	golang.org/x/crypto v0.50.0
+	golang.org/x/crypto v0.45.0
 )
 
 require (
